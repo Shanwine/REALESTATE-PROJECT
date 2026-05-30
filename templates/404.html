@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>404 – Page Not Found</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060810;
+      --surface: #0d1017;
+      --border: rgba(255,255,255,0.07);
+      --red: #ff3b3b;
+      --red-dim: rgba(255,59,59,0.12);
+      --red-glow: rgba(255,59,59,0.25);
+      --text: #e8eaf0;
+      --muted: #4a5068;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,59,59,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,59,59,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    /* glow blob */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,59,59,0.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 680px;
+      padding: 2rem;
+      animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* big 404 */
+    .big-code {
+      font-family: var(--mono);
+      font-size: clamp(7rem, 22vw, 11rem);
+      font-weight: 700;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255,59,59,0.25);
+      letter-spacing: -4px;
+      position: relative;
+      user-select: none;
+      margin-bottom: -1.2rem;
+      animation: fadeUp 0.7s 0.05s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--red);
+      background: var(--red-dim);
+      border: 1px solid rgba(255,59,59,0.2);
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 1.2rem;
+      animation: fadeUp 0.7s 0.1s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.7)} }
+
+    h1 {
+      font-family: var(--sans);
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 500;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+      animation: fadeUp 0.7s 0.15s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.7s 0.2s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.7s 0.35s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 11px 22px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--red);
+      color: #fff;
+      border: 1px solid var(--red);
+      box-shadow: 0 0 24px rgba(255,59,59,0.25);
+    }
+    .btn-primary:hover {
+      background: #ff5555;
+      box-shadow: 0 0 36px rgba(255,59,59,0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-color: rgba(255,255,255,0.14);
+    }
+
+    .arrow { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="big-code">404</div>
+
+    <div class="badge">HTTP 404 · Page Not Found</div>
+
+    <h1>This page doesn't exist.</h1>
+    <p class="subtitle">The URL you visited didn't match any route in the application.</p>
+
+      <a href="javascript:history.back()" class="btn btn-ghost">
+        Go Back
+      </a>
+    </div>
+  </div>
+
+
+</body>
+</html>

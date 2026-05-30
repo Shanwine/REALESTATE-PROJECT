@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Find Your Dream Home{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7 fade-in">
+                <h1 class="hero-title">Find Your<br><span>Dream Home</span><br>With EstateHub</h1>
+                <p class="hero-subtitle">Discover premium properties across the Philippines. From modern condos to spacious family homes — your perfect home is just a click away.</p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{% url 'property_list' %}" class="btn btn-gold btn-lg"><i class="bi bi-search me-2"></i>Browse Properties</a>
+                    <a href="{% url 'register' %}" class="btn btn-outline-gold btn-lg"><i class="bi bi-person-plus me-2"></i>Get Started</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat"><h3>{{ total_properties }}+</h3><p>Active Listings</p></div>
+                    <div class="hero-stat"><h3>500+</h3><p>Happy Customers</p></div>
+                    <div class="hero-stat"><h3>50+</h3><p>Locations</p></div>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center fade-in fade-in-delay-2">
+                <div style="font-size:12rem;opacity:0.15;color:var(--accent);"><i class="bi bi-house-heart-fill"></i></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Properties -->
+{% if featured_properties %}
+<section class="py-5">
+    <div class="container">
+        <div class="section-header">
+            <h2>Featured <span>Properties</span></h2>
+            <div class="section-divider"></div>
+            <p>Handpicked premium listings for you</p>
+        </div>
+        <div class="row g-4">
+            {% for prop in featured_properties %}
+            <div class="col-lg-4 col-md-6 fade-in fade-in-delay-{{ forloop.counter0 }}">
+                <div class="property-card">
+                    <div class="card-img-wrapper">
+                        {% if prop.primary_image %}
+                        <img src="{{ prop.primary_image.image.url }}" class="card-img-top" alt="{{ prop.title }}">
+                        {% else %}
+                        <div class="img-placeholder"><i class="bi bi-house"></i></div>
+                        {% endif %}
+                        <span class="property-badge badge-{{ prop.status }}">{{ prop.get_status_display }}</span>
+                        <span class="badge-featured"><i class="bi bi-star-fill me-1"></i>Featured</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-price">{{ prop.formatted_price }}</div>
+                        <h5 class="card-title">{{ prop.title }}</h5>
+                        <div class="card-location"><i class="bi bi-geo-alt-fill"></i>{{ prop.location }}</div>
+                        <div class="card-features">
+                            <span><i class="bi bi-door-open"></i> {{ prop.bedrooms }} Beds</span>
+                            <span><i class="bi bi-droplet"></i> {{ prop.bathrooms }} Baths</span>
+                            <span><i class="bi bi-arrows-angle-expand"></i> {{ prop.area_sqft }} sqft</span>
+                        </div>
+                        <a href="{% url 'property_detail' prop.pk %}" class="btn btn-outline-gold btn-sm w-100 mt-3">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Latest Properties -->
+{% if latest_properties %}
+<section class="py-5" style="background:var(--primary);">
+    <div class="container">
+        <div class="section-header">
+            <h2>Latest <span>Listings</span></h2>
+            <div class="section-divider"></div>
+            <p>Newly added properties on our platform</p>
+        </div>
+        <div class="row g-4">
+            {% for prop in latest_properties %}
+            <div class="col-lg-4 col-md-6">
+                <div class="property-card">
+                    <div class="card-img-wrapper">
+                        {% if prop.primary_image %}
+                        <img src="{{ prop.primary_image.image.url }}" class="card-img-top" alt="{{ prop.title }}">
+                        {% else %}
+                        <div class="img-placeholder"><i class="bi bi-house"></i></div>
+                        {% endif %}
+                        <span class="property-badge badge-{{ prop.status }}">{{ prop.get_status_display }}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-price">{{ prop.formatted_price }}</div>
+                        <h5 class="card-title">{{ prop.title }}</h5>
+                        <div class="card-location"><i class="bi bi-geo-alt-fill"></i>{{ prop.location }}</div>
+                        <div class="card-features">
+                            <span><i class="bi bi-door-open"></i> {{ prop.bedrooms }} Beds</span>
+                            <span><i class="bi bi-droplet"></i> {{ prop.bathrooms }} Baths</span>
+                            <span><i class="bi bi-arrows-angle-expand"></i> {{ prop.area_sqft }} sqft</span>
+                        </div>
+                        <a href="{% url 'property_detail' prop.pk %}" class="btn btn-outline-gold btn-sm w-100 mt-3">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'property_list' %}" class="btn btn-gold"><i class="bi bi-grid me-2"></i>View All Properties</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h2 class="mb-3">Ready to Find Your <span class="text-accent">Perfect Home</span>?</h2>
+        <p class="text-muted mb-4">Join EstateHub today and get access to exclusive property listings.</p>
+        <a href="{% url 'register' %}" class="btn btn-gold btn-lg"><i class="bi bi-rocket-takeoff me-2"></i>Create Free Account</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+{% block title %}Reports{% endblock %}
+{% block extra_css %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>{% endblock %}
+{% block dashboard_content %}
+<div class="dashboard-header"><h1><i class="bi bi-graph-up text-accent me-2"></i>Reports & Analytics</h1></div>
+
+<!-- Summary -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3"><div class="stat-card"><div class="stat-icon stat-icon-gold"><i class="bi bi-currency-dollar"></i></div><div class="stat-value">₱{{ total_revenue|floatformat:"0" }}</div><div class="stat-label">Total Revenue</div></div></div>
+    <div class="col-md-3"><div class="stat-card"><div class="stat-icon stat-icon-green"><i class="bi bi-house-check"></i></div><div class="stat-value">{{ sold_count }}</div><div class="stat-label">Properties Sold</div></div></div>
+    <div class="col-md-3"><div class="stat-card"><div class="stat-icon stat-icon-blue"><i class="bi bi-people"></i></div><div class="stat-value">{{ active_customers }}</div><div class="stat-label">Active Customers</div></div></div>
+    <div class="col-md-3"><div class="stat-card"><div class="stat-icon stat-icon-red"><i class="bi bi-chat-dots"></i></div><div class="stat-value">{{ total_inquiries }}</div><div class="stat-label">Total Inquiries</div></div></div>
+</div>
+
+<!-- Charts -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8"><div class="chart-container"><h5 class="mb-3">Monthly Sales Revenue</h5><canvas id="salesChart" height="100"></canvas></div></div>
+    <div class="col-lg-4"><div class="chart-container"><h5 class="mb-3">Property Types</h5><canvas id="typeChart" height="200"></canvas></div></div>
+</div>
+
+<!-- Property Status -->
+<div class="row g-4">
+    <div class="col-lg-6"><div class="chart-container"><h5 class="mb-3">Property Status Overview</h5><canvas id="statusChart" height="150"></canvas></div></div>
+    <div class="col-lg-6">
+        <div class="form-card">
+            <h5 class="mb-3">Quick Stats</h5>
+            <div class="d-flex justify-content-between py-2 border-bottom" style="border-color:var(--border) !important;"><span style="color:var(--text-muted);">Total Properties</span><strong>{{ total_properties }}</strong></div>
+            <div class="d-flex justify-content-between py-2 border-bottom" style="border-color:var(--border) !important;"><span style="color:var(--text-muted);">Available</span><strong class="text-success">{{ available_count }}</strong></div>
+            <div class="d-flex justify-content-between py-2 border-bottom" style="border-color:var(--border) !important;"><span style="color:var(--text-muted);">Reserved</span><strong class="text-warning">{{ reserved_count }}</strong></div>
+            <div class="d-flex justify-content-between py-2 border-bottom" style="border-color:var(--border) !important;"><span style="color:var(--text-muted);">Sold</span><strong class="text-danger">{{ sold_count }}</strong></div>
+            <div class="d-flex justify-content-between py-2 border-bottom" style="border-color:var(--border) !important;"><span style="color:var(--text-muted);">Total Favorites</span><strong>{{ total_favorites }}</strong></div>
+            <div class="d-flex justify-content-between py-2"><span style="color:var(--text-muted);">Active Customers</span><strong>{{ active_customers }}</strong></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const chartColors = { gold:'#f59e0b', blue:'#3b82f6', green:'#10b981', red:'#ef4444', purple:'#8b5cf6', cyan:'#06b6d4' };
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.borderColor = 'rgba(148,163,184,0.1)';
+
+// Monthly Sales
+const salesData = {{ monthly_sales|safe }};
+new Chart(document.getElementById('salesChart'), {
+    type:'bar',
+    data:{
+        labels: salesData.map(d => { const dt=new Date(d.month); return dt.toLocaleDateString('en',{month:'short',year:'numeric'}); }),
+        datasets:[{ label:'Revenue (₱)', data:salesData.map(d=>d.total), backgroundColor:chartColors.gold+'99', borderColor:chartColors.gold, borderWidth:1, borderRadius:6 }]
+    },
+    options:{ responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true } } }
+});
+
+// Property Types
+const typeData = {{ type_breakdown|safe }};
+const typeLabels = { house:'House', condo:'Condo', townhouse:'Townhouse', apartment:'Apartment', lot:'Lot', commercial:'Commercial' };
+new Chart(document.getElementById('typeChart'), {
+    type:'doughnut',
+    data:{
+        labels: typeData.map(d => typeLabels[d.property_type]||d.property_type),
+        datasets:[{ data:typeData.map(d=>d.count), backgroundColor:[chartColors.gold,chartColors.blue,chartColors.green,chartColors.red,chartColors.purple,chartColors.cyan] }]
+    },
+    options:{ responsive:true, plugins:{ legend:{position:'bottom'} } }
+});
+
+// Status
+new Chart(document.getElementById('statusChart'), {
+    type:'bar',
+    data:{
+        labels:['Available','Reserved','Sold'],
+        datasets:[{ data:[{{ available_count }},{{ reserved_count }},{{ sold_count }}], backgroundColor:[chartColors.green+'99',chartColors.gold+'99',chartColors.red+'99'], borderColor:[chartColors.green,chartColors.gold,chartColors.red], borderWidth:1, borderRadius:6 }]
+    },
+    options:{ responsive:true, indexAxis:'y', plugins:{ legend:{display:false} } }
+});
+</script>
+{% endblock %}

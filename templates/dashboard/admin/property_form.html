@@ -1,0 +1,48 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+{% block title %}{% if editing %}Edit{% else %}Add{% endif %} Property{% endblock %}
+{% block dashboard_content %}
+<div class="dashboard-header">
+    <h1><i class="bi bi-{% if editing %}pencil{% else %}plus-circle{% endif %} text-accent me-2"></i>{% if editing %}Edit{% else %}Add New{% endif %} Property</h1>
+    <a href="{% url 'admin_properties' %}" class="btn btn-outline-gold"><i class="bi bi-arrow-left me-1"></i>Back</a>
+</div>
+
+<div class="form-card">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-8 mb-3"><label class="form-label">Title</label>{{ form.title }}</div>
+            <div class="col-md-4 mb-3"><label class="form-label">Status</label>{{ form.status }}</div>
+            <div class="col-12 mb-3"><label class="form-label">Description</label>{{ form.description }}</div>
+            <div class="col-md-4 mb-3"><label class="form-label">Price (₱)</label>{{ form.price }}</div>
+            <div class="col-md-4 mb-3"><label class="form-label">Location</label>{{ form.location }}</div>
+            <div class="col-md-4 mb-3"><label class="form-label">Property Type</label>{{ form.property_type }}</div>
+            <div class="col-12 mb-3"><label class="form-label">Full Address</label>{{ form.address }}</div>
+            <div class="col-md-3 mb-3"><label class="form-label">Bedrooms</label>{{ form.bedrooms }}</div>
+            <div class="col-md-3 mb-3"><label class="form-label">Bathrooms</label>{{ form.bathrooms }}</div>
+            <div class="col-md-3 mb-3"><label class="form-label">Area (sq ft)</label>{{ form.area_sqft }}</div>
+            <div class="col-md-3 mb-3 d-flex align-items-end"><div class="form-check">{{ form.is_featured }}<label class="form-check-label ms-2">Featured Property</label></div></div>
+            <div class="col-12 mb-3">
+                <label class="form-label">Upload Images</label>
+                <input type="file" name="images" class="form-control" multiple accept="image/*" id="id_images">
+                <div id="imagePreview" class="d-flex gap-2 mt-2 flex-wrap"></div>
+            </div>
+        </div>
+
+        {% if editing and existing_images %}
+        <div class="mb-3">
+            <label class="form-label">Current Images</label>
+            <div class="d-flex gap-2 flex-wrap">
+                {% for img in existing_images %}
+                <div class="position-relative">
+                    <img src="{{ img.image.url }}" style="width:100px;height:100px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
+                    <a href="{% url 'admin_property_image_delete' img.pk %}" class="position-absolute top-0 end-0 bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width:22px;height:22px;font-size:0.7rem;transform:translate(30%,-30%);" onclick="return confirm('Delete this image?')"><i class="bi bi-x"></i></a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-gold"><i class="bi bi-check-lg me-1"></i>{% if editing %}Update{% else %}Add{% endif %} Property</button>
+    </form>
+</div>
+{% endblock %}

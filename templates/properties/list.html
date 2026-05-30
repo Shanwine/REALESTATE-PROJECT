@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Browse Properties{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="section-header">
+        <h2>Browse <span>Properties</span></h2>
+        <div class="section-divider"></div>
+        <p>Find the perfect property that matches your needs</p>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="search-bar">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Keyword</label>
+                {{ form.keyword }}
+            </div>
+            <div class="col-lg-2 col-md-6">
+                <label class="form-label">Location</label>
+                {{ form.location }}
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <label class="form-label">Type</label>
+                {{ form.property_type }}
+            </div>
+            <div class="col-lg-1 col-md-4">
+                <label class="form-label">Min Price</label>
+                {{ form.min_price }}
+            </div>
+            <div class="col-lg-1 col-md-4">
+                <label class="form-label">Max Price</label>
+                {{ form.max_price }}
+            </div>
+            <div class="col-lg-1 col-md-4">
+                <label class="form-label">Beds</label>
+                {{ form.bedrooms }}
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <button type="submit" class="btn btn-gold w-100"><i class="bi bi-search me-1"></i>Search</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results -->
+    {% if properties %}
+    <div class="row g-4">
+        {% for prop in properties %}
+        <div class="col-lg-4 col-md-6">
+            <div class="property-card">
+                <div class="card-img-wrapper">
+                    {% if prop.primary_image %}
+                    <img src="{{ prop.primary_image.image.url }}" class="card-img-top" alt="{{ prop.title }}">
+                    {% else %}
+                    <div class="img-placeholder"><i class="bi bi-house"></i></div>
+                    {% endif %}
+                    <span class="property-badge badge-{{ prop.status }}">{{ prop.get_status_display }}</span>
+                    {% if prop.is_featured %}<span class="badge-featured"><i class="bi bi-star-fill"></i></span>{% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="card-price">{{ prop.formatted_price }}</div>
+                        <span class="badge bg-secondary">{{ prop.get_property_type_display }}</span>
+                    </div>
+                    <h5 class="card-title mt-1">{{ prop.title }}</h5>
+                    <div class="card-location"><i class="bi bi-geo-alt-fill"></i>{{ prop.location }}</div>
+                    <div class="card-features">
+                        <span><i class="bi bi-door-open"></i> {{ prop.bedrooms }} Beds</span>
+                        <span><i class="bi bi-droplet"></i> {{ prop.bathrooms }} Baths</span>
+                        <span><i class="bi bi-arrows-angle-expand"></i> {{ prop.area_sqft }} sqft</span>
+                    </div>
+                    <a href="{% url 'property_detail' prop.pk %}" class="btn btn-outline-gold btn-sm w-100 mt-3">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if properties.has_other_pages %}
+    <nav class="mt-4 d-flex justify-content-center">
+        <ul class="pagination">
+            {% if properties.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ properties.previous_page_number }}">&laquo;</a></li>
+            {% endif %}
+            {% for num in properties.paginator.page_range %}
+            <li class="page-item {% if properties.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if properties.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ properties.next_page_number }}">&raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-house-slash" style="font-size:4rem;color:var(--text-muted);"></i>
+        <h4 class="mt-3">No Properties Found</h4>
+        <p class="text-muted">Try adjusting your search criteria.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}{{ property.title }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Image Gallery -->
+        <div class="col-lg-8">
+            <div class="detail-hero fade-in">
+                {% if images %}
+                <div id="propCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for img in images %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ img.image.url }}" class="d-block w-100" alt="{{ property.title }}" style="height:450px;object-fit:cover;border-radius:var(--radius);">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if images.count > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#propCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#propCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="img-placeholder" style="height:450px;border-radius:var(--radius);"><i class="bi bi-house" style="font-size:5rem;"></i></div>
+                {% endif %}
+            </div>
+            <!-- Description -->
+            <div class="detail-info-card mt-4">
+                <h3 class="mb-3">Description</h3>
+                <p style="color:var(--text-muted);line-height:1.8;">{{ property.description }}</p>
+            </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="col-lg-4">
+            <div class="detail-info-card fade-in">
+                <span class="status-badge status-{{ property.status }} mb-3 d-inline-block">{{ property.get_status_display }}</span>
+                <div class="detail-price mb-2">{{ property.formatted_price }}</div>
+                <h4>{{ property.title }}</h4>
+                <p style="color:var(--text-muted);"><i class="bi bi-geo-alt-fill text-accent me-1"></i>{{ property.location }}</p>
+                {% if property.address %}<p style="color:var(--text-muted);font-size:0.85rem;">{{ property.address }}</p>{% endif %}
+
+                <div class="detail-features">
+                    <div class="detail-feature"><i class="bi bi-door-open"></i><div class="value">{{ property.bedrooms }}</div><div class="label">Bedrooms</div></div>
+                    <div class="detail-feature"><i class="bi bi-droplet"></i><div class="value">{{ property.bathrooms }}</div><div class="label">Bathrooms</div></div>
+                    <div class="detail-feature"><i class="bi bi-arrows-angle-expand"></i><div class="value">{{ property.area_sqft }}</div><div class="label">Sq Ft</div></div>
+                    <div class="detail-feature"><i class="bi bi-house"></i><div class="value">{{ property.get_property_type_display }}</div><div class="label">Type</div></div>
+                </div>
+
+                <div class="d-grid gap-2 mt-3">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'toggle_favorite' property.pk %}" class="btn {% if is_favorited %}btn-danger{% else %}btn-outline-gold{% endif %}">
+                        <i class="bi bi-heart{% if is_favorited %}-fill{% endif %} me-1"></i>{% if is_favorited %}Remove from Favorites{% else %}Add to Favorites{% endif %}
+                    </a>
+                    <a href="{% url 'send_property_inquiry' property.pk %}" class="btn btn-gold"><i class="bi bi-envelope me-1"></i>Send Inquiry</a>
+
+{% if property.status == 'available' %}
+<button class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#buyModal">
+    <i class="bi bi-cart me-1"></i>Buy Now
+</button>
+{% endif %}
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-gold"><i class="bi bi-box-arrow-in-right me-1"></i>Login to Inquire</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if property.agent %}
+            <div class="detail-info-card mt-3">
+                <h6><i class="bi bi-person-badge text-accent me-1"></i>Listed By</h6>
+                <p class="mb-0" style="color:var(--text-muted);">{{ property.agent.get_full_name|default:property.agent.username }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Related Properties -->
+    {% if related_properties %}
+    <div class="mt-5">
+        <h3 class="mb-4">Similar <span class="text-accent">Properties</span></h3>
+        <div class="row g-4">
+            {% for prop in related_properties %}
+            <div class="col-lg-4 col-md-6">
+                <div class="property-card">
+                    <div class="card-img-wrapper">
+                        {% if prop.primary_image %}<img src="{{ prop.primary_image.image.url }}" class="card-img-top" alt="{{ prop.title }}">{% else %}<div class="img-placeholder"><i class="bi bi-house"></i></div>{% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="card-price">{{ prop.formatted_price }}</div>
+                        <h5 class="card-title">{{ prop.title }}</h5>
+                        <div class="card-location"><i class="bi bi-geo-alt-fill"></i>{{ prop.location }}</div>
+                        <a href="{% url 'property_detail' prop.pk %}" class="btn btn-outline-gold btn-sm w-100 mt-2">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+<!-- Buy Now Modal -->
+<div class="modal fade" id="buyModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title"><i class="bi bi-cart text-accent me-2"></i>Purchase Property</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'buy_property' property.pk %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <p class="text-muted">You are about to purchase <strong class="text-white">{{ property.title }}</strong> for <strong class="text-accent">{{ property.formatted_price }}</strong>.</p>
+          <div class="mb-3">
+            <label class="form-label">Payment Method</label>
+            <select name="payment_method" class="form-select bg-dark text-white border-secondary">
+              <option value="cash">Cash</option>
+              <option value="bank_transfer">Bank Transfer</option>
+              <option value="financing">Bank Financing</option>
+              <option value="installment">Installment</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Notes (optional)</label>
+            <textarea name="notes" class="form-control bg-dark text-white border-secondary" rows="3" placeholder="Any additional info..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-gold"><i class="bi bi-check-circle me-1"></i>Confirm Purchase</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

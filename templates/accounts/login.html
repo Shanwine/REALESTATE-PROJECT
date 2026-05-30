@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card fade-in">
+        <div class="text-center">
+            <span class="brand-icon"><i class="bi bi-houses-fill"></i></span>
+            <h2>Welcome Back</h2>
+            <p class="auth-subtitle">Sign in to your EstateHub account</p>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-danger py-2" style="font-size:0.85rem;">
+                <i class="bi bi-exclamation-circle me-1"></i>Invalid username or password.
+            </div>
+            {% endif %}
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                {{ form.username }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                {{ form.password }}
+            </div>
+            <button type="submit" class="btn btn-gold w-100 mb-3"><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</button>
+            <p class="text-center" style="color:var(--text-muted);font-size:0.9rem;">
+                Don't have an account? <a href="{% url 'register' %}">Register here</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

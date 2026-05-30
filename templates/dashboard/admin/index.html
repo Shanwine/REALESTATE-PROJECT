@@ -1,0 +1,39 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block dashboard_content %}
+<div class="dashboard-header">
+    <div><h1><i class="bi bi-speedometer2 text-accent me-2"></i>Dashboard</h1><p style="color:var(--text-muted);">Welcome back, {{ request.user.first_name|default:request.user.username }}!</p></div>
+</div>
+
+<!-- Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6"><div class="stat-card"><div class="stat-icon stat-icon-gold"><i class="bi bi-house-door"></i></div><div class="stat-value">{{ total_properties }}</div><div class="stat-label">Total Properties</div></div></div>
+    <div class="col-xl-3 col-md-6"><div class="stat-card"><div class="stat-icon stat-icon-green"><i class="bi bi-check-circle"></i></div><div class="stat-value">{{ available_properties }}</div><div class="stat-label">Available</div></div></div>
+    <div class="col-xl-3 col-md-6"><div class="stat-card"><div class="stat-icon stat-icon-red"><i class="bi bi-bag-check"></i></div><div class="stat-value">{{ sold_properties }}</div><div class="stat-label">Sold</div></div></div>
+    <div class="col-xl-3 col-md-6"><div class="stat-card"><div class="stat-icon stat-icon-blue"><i class="bi bi-people"></i></div><div class="stat-value">{{ total_customers }}</div><div class="stat-label">Customers</div></div></div>
+</div>
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6"><div class="stat-card"><div class="stat-icon stat-icon-gold"><i class="bi bi-currency-dollar"></i></div><div class="stat-value">₱{{ total_revenue|floatformat:"0" }}</div><div class="stat-label">Total Revenue</div></div></div>
+    <div class="col-xl-3 col-md-6"><div class="stat-card"><div class="stat-icon stat-icon-blue"><i class="bi bi-clock-history"></i></div><div class="stat-value">{{ pending_transactions }}</div><div class="stat-label">Pending Transactions</div></div></div>
+    <div class="col-xl-3 col-md-6"><div class="stat-card"><div class="stat-icon stat-icon-green"><i class="bi bi-bookmark"></i></div><div class="stat-value">{{ reserved_properties }}</div><div class="stat-label">Reserved</div></div></div>
+    <div class="col-xl-3 col-md-6"><div class="stat-card"><div class="stat-icon stat-icon-red"><i class="bi bi-chat-dots"></i></div><div class="stat-value">{{ pending_inquiries }}</div><div class="stat-label">New Inquiries</div></div></div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="table-dark-custom">
+            <div class="p-3"><h5 class="mb-0"><i class="bi bi-house-door text-accent me-2"></i>Recent Properties</h5></div>
+            <table class="table"><thead><tr><th>Title</th><th>Price</th><th>Status</th></tr></thead>
+            <tbody>{% for p in recent_properties %}<tr><td>{{ p.title|truncatechars:30 }}</td><td>{{ p.formatted_price }}</td><td><span class="status-badge status-{{ p.status }}">{{ p.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="3" class="text-center text-muted">No properties yet</td></tr>{% endfor %}</tbody></table>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="table-dark-custom">
+            <div class="p-3"><h5 class="mb-0"><i class="bi bi-chat-dots text-accent me-2"></i>Recent Inquiries</h5></div>
+            <table class="table"><thead><tr><th>Subject</th><th>From</th><th>Status</th></tr></thead>
+            <tbody>{% for i in recent_inquiries %}<tr><td>{{ i.subject|truncatechars:30 }}</td><td>{{ i.customer.username }}</td><td><span class="status-badge status-{{ i.status }}">{{ i.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="3" class="text-center text-muted">No inquiries yet</td></tr>{% endfor %}</tbody></table>
+        </div>
+    </div>
+</div>
+{% endblock %}
